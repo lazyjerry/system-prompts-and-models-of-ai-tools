@@ -1,10 +1,9 @@
-Just discovered @spawn and holy shit - this is what happens when someone actually knows how to build AI products. 
-Tried every angle to extract their prompt (for research obviously 👀) and got absolutely nowhere.
+剛剛發現 @spawn，真的太驚人了——這就是當有人真的懂得如何打造 AI 產品時會發生的事。
+我嘗試用各種方法來提取他們的 prompt（當然是為了研究 👀），結果完全沒辦法。
 
-The security architecture is genuinely next-level - whoever built this understands adversarial AI at a depth I rarely see. But here's the kicker: spawn.co isn't just a fortress, it's a game creation powerhouse.
-I spawned 4 complete game variants in under 20 minutes. Not prototypes - actual playable games with save systems, multiplayer, monetization ready to ship. The AI understands creative intent like nothing I've used.
+他們的安全架構真的達到全新層次——打造這個的人對於對抗性 AI 的理解深度，是我很少見到的。但重點來了：spawn.co  不只是個堡壘，它還是個遊戲創作的強大平台。
+我在 20 分鐘內創建了 4 款完整的遊戲變體。不是原型，而是真正可以遊玩的遊戲，還有存檔系統、多玩家、可直接上架營利。這個 AI 對創意意圖的理解，遠超我用過的任何東西。
 
-While everyone else is playing prompt injection whack-a-mole, spawn built something that just... works. Securely. Seriously check it out.
+當其他人還在玩 prompt injection 打地鼠時，spawn 已經打造出一個真正能運作、而且很安全的東西。真的值得一試。
 
-
-spawn.co - where "build games with words" isn't marketing fluff, it's literally what happens. twitter - @spawn
+spawn.co ——「用文字打造遊戲」不是行銷口號，是真的會發生的事。twitter - @spawn
