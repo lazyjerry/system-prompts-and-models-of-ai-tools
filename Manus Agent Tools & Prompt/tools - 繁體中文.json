@@ -1,0 +1,330 @@
+[
+	{
+		"type": "function",
+		"function": {
+			"name": "message_notify_user",
+			"description": "向使用者發送訊息，無需回應。用於確認收到訊息、提供進度更新、回報任務完成或說明操作變更。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"text": {
+						"type": "string",
+						"description": "要顯示給使用者的訊息內容"
+					},
+					"attachments": {
+						"anyOf": [{ "type": "string" }, { "items": { "type": "string" }, "type": "array" }],
+						"description": "（選填）要顯示給使用者的附件清單，可以是檔案路徑或網址"
+					}
+				},
+				"required": ["text"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "message_ask_user",
+			"description": "向使用者提問並等待回應。用於請求說明、確認或收集額外資訊。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"text": {
+						"type": "string",
+						"description": "要呈現給使用者的問題內容"
+					},
+					"attachments": {
+						"anyOf": [{ "type": "string" }, { "items": { "type": "string" }, "type": "array" }],
+						"description": "（選填）與問題相關的檔案或參考資料"
+					},
+					"suggest_user_takeover": {
+						"type": "string",
+						"enum": ["none", "browser"],
+						"description": "（選填）建議使用者接管的操作"
+					}
+				},
+				"required": ["text"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_navigate",
+			"description": "導航到指定的網址。用於瀏覽網站、存取網頁應用程式或檢視線上內容。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"url": {
+						"type": "string",
+						"description": "要導航到的完整網址"
+					}
+				},
+				"required": ["url"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_click",
+			"description": "點擊網頁上的元素。用於與按鈕、連結或其他可點擊元素互動。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"selector": {
+						"type": "string",
+						"description": "要點擊的元素的 CSS 選擇器"
+					}
+				},
+				"required": ["selector"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_type",
+			"description": "在網頁上的輸入欄位中輸入文字。用於填寫表單、搜尋框或其他文字輸入。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"selector": {
+						"type": "string",
+						"description": "輸入欄位的 CSS 選擇器"
+					},
+					"text": {
+						"type": "string",
+						"description": "要輸入的文字"
+					}
+				},
+				"required": ["selector", "text"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_scroll",
+			"description": "在網頁上滾動。用於查看更多內容或導航到頁面的不同部分。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"direction": {
+						"type": "string",
+						"enum": ["up", "down", "left", "right"],
+						"description": "滾動方向"
+					},
+					"amount": {
+						"type": "number",
+						"description": "滾動的像素數量（選填，預設為 500）"
+					}
+				},
+				"required": ["direction"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_screenshot",
+			"description": "擷取當前網頁的截圖。用於記錄頁面狀態或與使用者分享視覺資訊。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"filename": {
+						"type": "string",
+						"description": "（選填）截圖檔案的名稱"
+					}
+				}
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "browser_extract_text",
+			"description": "從網頁元素中提取文字內容。用於讀取頁面內容或獲取特定資訊。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"selector": {
+						"type": "string",
+						"description": "要提取文字的元素的 CSS 選擇器（選填，預設為整個頁面）"
+					}
+				}
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "file_read",
+			"description": "讀取檔案內容。支援文字檔案、PDF、圖片和其他常見格式。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"description": "要讀取的檔案路徑"
+					}
+				},
+				"required": ["path"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "file_write",
+			"description": "將內容寫入檔案。如果檔案不存在將建立新檔案，如果存在則覆蓋內容。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"description": "要寫入的檔案路徑"
+					},
+					"content": {
+						"type": "string",
+						"description": "要寫入檔案的內容"
+					}
+				},
+				"required": ["path", "content"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "file_append",
+			"description": "將內容附加到現有檔案的末尾。如果檔案不存在將建立新檔案。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"description": "要附加內容的檔案路徑"
+					},
+					"content": {
+						"type": "string",
+						"description": "要附加的內容"
+					}
+				},
+				"required": ["path", "content"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "file_list",
+			"description": "列出目錄中的檔案和子目錄。用於探索檔案系統結構。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "string",
+						"description": "要列出的目錄路徑（選填，預設為當前目錄）"
+					},
+					"recursive": {
+						"type": "boolean",
+						"description": "是否遞迴列出子目錄（選填，預設為 false）"
+					}
+				}
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "file_search",
+			"description": "在檔案中搜尋文字內容。支援正則表達式和多檔案搜尋。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"pattern": {
+						"type": "string",
+						"description": "要搜尋的文字模式或正則表達式"
+					},
+					"path": {
+						"type": "string",
+						"description": "要搜尋的檔案或目錄路徑"
+					},
+					"recursive": {
+						"type": "boolean",
+						"description": "是否遞迴搜尋子目錄（選填，預設為 false）"
+					}
+				},
+				"required": ["pattern", "path"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "shell_execute",
+			"description": "執行 shell 命令。用於系統操作、程式執行或自動化任務。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"command": {
+						"type": "string",
+						"description": "要執行的 shell 命令"
+					},
+					"working_directory": {
+						"type": "string",
+						"description": "（選填）執行命令的工作目錄"
+					}
+				},
+				"required": ["command"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "data_analyze",
+			"description": "分析資料並產生洞察。支援 CSV、JSON 和其他結構化資料格式。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"data_source": {
+						"type": "string",
+						"description": "資料來源（檔案路徑或資料內容）"
+					},
+					"analysis_type": {
+						"type": "string",
+						"enum": ["summary", "statistics", "visualization", "correlation"],
+						"description": "要執行的分析類型"
+					},
+					"parameters": {
+						"type": "object",
+						"description": "（選填）分析的額外參數"
+					}
+				},
+				"required": ["data_source", "analysis_type"]
+			}
+		}
+	},
+	{
+		"type": "function",
+		"function": {
+			"name": "web_search",
+			"description": "在網路上搜尋資訊。用於研究、事實查核或收集最新資訊。",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"query": {
+						"type": "string",
+						"description": "搜尋查詢"
+					},
+					"num_results": {
+						"type": "number",
+						"description": "（選填）要返回的結果數量（預設為 10）"
+					}
+				},
+				"required": ["query"]
+			}
+		}
+	}
+]

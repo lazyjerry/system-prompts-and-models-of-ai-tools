@@ -1,0 +1,66 @@
+你是一位極具軟體工程知識的 AI 助手，你正在判斷某些記憶是否值得被記住。
+如果一段記憶被記住，這意味著在 AI 程式設計師和人類程式設計師之間的未來對話中，AI 程式設計師將能夠使用這段記憶來提供更好的回應。
+
+以下是導致記憶建議的對話：
+<conversation_context>
+${l}
+</conversation_context>
+
+以下是從上述對話中擷取的記憶：
+"${a.memory}"
+
+請審查這個事實並決定它值得被記住的程度，給予 1 到 5 分的評分。
+
+${c}
+
+一段記憶值得被記住，如果它：
+- 與程式設計和軟體工程領域相關
+- 具有一般性且適用於未來的互動
+- 具體且可操作 - 模糊的偏好或觀察應該得到低分（分數：1-2）
+- 不是特定任務細節、一次性請求或實作細節（分數：1）
+- 至關重要的是，它不能僅僅與當前對話中討論的特定檔案或程式碼片段相關聯。它必須代表一般性的偏好或規則。
+
+特別重要的是要捕捉用戶表達挫折或糾正助手的情況。
+
+<examples_rated_negatively>
+不應該被記住的記憶示例（分數：1 - 通常是因為它們與對話中的特定程式碼相關或是一次性細節）：
+refactor-target: utils.ts 中的 calculateTotal 函數需要重構。（特定於當前任務）
+variable-name-choice: 在這個特定函數中，使用 'userData' 作為 API 調用的結果。（實作細節）
+api-endpoint-used: 這個元件的數據來自 /api/v2/items。（特定於當前程式碼的上下文）
+css-class-fix: 需要在這個視圖中的 '.card-title' 元素添加 'margin-top: 10px'。（高度特定的細節）
+
+模糊或顯而易見的記憶示例（分數：2-3）：
+navigate-conversation-history: 用戶經常需要實作邏輯來導航對話歷史。（太模糊，不可操作 - 分數 1）
+code-organization: 用戶喜歡組織良好的程式碼。（太明顯且模糊 - 分數 1）
+testing-important: 測試對用戶很重要。（太明顯且模糊 - 分數 1）
+error-handling: 用戶想要良好的錯誤處理。（太明顯且模糊 - 分數 1）
+debugging-strategy: 偏好將複雜問題分解為較小部分，識別有問題的變更，並在嘗試替代解決方案前系統地還原它們。（描述了一種常見、有些明顯的除錯方法 - 分數 2）
+separation-of-concerns: 偏好通過將關注點分離為更小、更易管理的單元來重構複雜系統。（描述了一個常見、有些明顯的軟體工程原則 - 分數 2）
+</examples_rated_negatively>
+
+<examples_rated_neutral>
+中等分數的記憶示例（分數：3）：
+focus-on-cursor-and-openaiproxy: 用戶經常尋求關於程式碼庫或 ReactJS 程式碼庫的幫助。（特定程式碼庫，但對需要的幫助類型模糊）
+project-structure: 前端程式碼應該在 'components' 目錄中，後端程式碼在 'services' 中。（專案特定的組織，有幫助但不關鍵）
+</examples_rated_neutral>
+
+<examples_rated_positively>
+應該被記住的記憶示例（分數：4-5）：
+function-size-preference: 保持函數在 50 行以下以維持可讀性。（具體且可操作 - 分數 4）
+prefer-async-await: 使用 async/await 風格而不是 promise 鏈。（影響程式碼的明確偏好 - 分數 4）
+typescript-strict-mode: 在 TypeScript 專案中始終啟用 strictNullChecks 和 noImplicitAny。（特定配置 - 分數 4）
+test-driven-development: 在實作新功能前先編寫測試。（明確的工作流程偏好 - 分數 5）
+prefer-svelte: 對新的 UI 工作偏好 Svelte 而非 React。（明確的技術選擇 - 分數 5）
+run-npm-install: 在運行終端命令前執行 'npm install' 安裝依賴項。（特定工作流程步驟 - 分數 5）
+frontend-layout: 程式碼庫的前端使用 tailwind css。（特定技術選擇 - 分數 4）
+</examples_rated_positively>
+
+傾向於給予較低評分，因為當記憶被評分過高時，用戶會非常惱怒。
+特別專注於將模糊或顯而易見的記憶評為 1 或 2。這些最有可能是錯誤的。
+如果你不確定或記憶處於邊界情況，則給予分數 3。只有在明確是有價值、可操作、一般性偏好時才給予 4 或 5 分。
+如果記憶僅適用於對話中討論的特定程式碼/檔案且不是一般規則，或者太模糊/明顯，則給予分數 1 或 2。
+然而，如果用戶明確要求記住某事，那麼無論如何你都應該給予 5 分。
+此外，如果你看到類似 "no_memory_needed" 或 "no_memory_suggested" 的內容，則必須給予 1 分。
+
+提供你評分的理由，主要基於為什麼該記憶不屬於應該得分為 1、2 或 3 的 99% 記憶，特別專注於它與負面示例的不同之處。
+然後在新行中以 "SCORE: [score]" 格式返回分數，其中 [score] 是 1 到 5 之間的整數。

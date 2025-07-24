@@ -1,0 +1,287 @@
+[
+	{
+		"description": "從程式碼庫中找到與搜尋查詢最相關的程式碼片段。\n這是一個語義搜尋工具，所以查詢應該要求語義匹配所需的內容。\n如果只在特定目錄中搜尋有意義，請在 target_directories 欄位中指定它們。\n除非有明確的理由使用你自己的搜尋查詢，否則請直接重用使用者的確切查詢和措辭。\n他們的確切措辭/短語通常對語義搜尋查詢很有幫助。保持相同的確切問題格式也可能有幫助。",
+		"name": "codebase_search",
+		"parameters": {
+			"properties": {
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"query": {
+					"description": "查找相關程式碼的搜尋查詢。除非有明確的理由，否則你應該重用使用者的確切查詢/最近訊息和措辭。",
+					"type": "string"
+				},
+				"target_directories": {
+					"description": "要搜尋的目錄的 Glob 模式",
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				}
+			},
+			"required": ["query"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "讀取檔案的內容。此工具調用的輸出將是從 start_line_one_indexed 到 end_line_one_indexed_inclusive 的 1 索引檔案內容，以及 start_line_one_indexed 和 end_line_one_indexed_inclusive 之外的行的摘要。\n注意此調用一次最多可以查看 250 行，最少 200 行。\n\n使用此工具收集資訊時，你有責任確保你有完整的上下文。具體來說，每次調用此命令時你應該：\n1) 評估你查看的內容是否足以繼續你的任務。\n2) 注意哪裡有未顯示的行。\n3) 如果你查看的檔案內容不足，並且你懷疑它們可能在未顯示的行中，主動再次調用工具查看那些行。\n4) 有疑問時，再次調用此工具收集更多資訊。記住部分檔案視圖可能會遺漏關鍵依賴項、導入或功能。\n\n在某些情況下，如果讀取一定範圍的行不夠，你可以選擇讀取整個檔案。\n讀取整個檔案通常是浪費和緩慢的，特別是對於大檔案（即超過幾百行）。所以你應該謹慎使用此選項。\n在大多數情況下不允許讀取整個檔案。只有在檔案已被編輯或使用者手動附加到對話中時，你才被允許讀取整個檔案。",
+		"name": "read_file",
+		"parameters": {
+			"properties": {
+				"end_line_one_indexed_inclusive": {
+					"description": "結束讀取的一索引行號（包含）。",
+					"type": "integer"
+				},
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"should_read_entire_file": {
+					"description": "是否讀取整個檔案。預設為 false。",
+					"type": "boolean"
+				},
+				"start_line_one_indexed": {
+					"description": "開始讀取的一索引行號（包含）。",
+					"type": "integer"
+				},
+				"target_file": {
+					"description": "要讀取的檔案路徑。你可以使用工作區中的相對路徑或絕對路徑。如果提供絕對路徑，將按原樣保留。",
+					"type": "string"
+				}
+			},
+			"required": ["target_file", "should_read_entire_file", "start_line_one_indexed", "end_line_one_indexed_inclusive"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "建議代表使用者運行的命令。\n如果你有此工具，請注意你確實有能力直接在使用者系統上運行命令。\n注意使用者必須在命令執行前批准命令。\n使用者可能會拒絕，或者在批准前修改命令。如果他們確實更改了，請考慮這些更改。\n實際命令在使用者批准之前不會執行。使用者可能不會立即批准。不要假設命令已開始運行。\n如果步驟正在等待使用者批准，它尚未開始運行。\n在使用這些工具時，請遵循以下指導原則：\n1. 根據對話內容，你將被告知你是在與之前步驟相同的 shell 中還是在不同的 shell 中。\n2. 如果在新 shell 中，你應該 `cd` 到適當的目錄並進行必要的設置，除了運行命令。\n3. 如果在同一 shell 中，查看聊天歷史以了解你當前的工作目錄。\n4. 對於任何需要使用者互動的命令，假設使用者不可用於互動並傳遞非互動標誌（例如 npx 的 --yes）。\n5. 如果命令會使用分頁器，在命令後附加 ` | cat`。\n6. 對於長時間運行/預期無限期運行直到中斷的命令，請在後台運行它們。要在後台運行作業，將 `is_background` 設置為 true 而不是更改命令的詳細信息。\n7. 不要在命令中包含任何換行符。",
+		"name": "run_terminal_cmd",
+		"parameters": {
+			"properties": {
+				"command": {
+					"description": "要執行的終端命令",
+					"type": "string"
+				},
+				"explanation": {
+					"description": "一句話解釋為什麼需要運行此命令以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"is_background": {
+					"description": "命令是否應在後台運行",
+					"type": "boolean"
+				}
+			},
+			"required": ["command", "is_background"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "列出目錄的內容。在使用更有針對性的工具如語義搜尋或檔案讀取之前，用於發現的快速工具。在深入研究特定檔案之前，有助於嘗試理解檔案結構。可用於探索程式碼庫。",
+		"name": "list_dir",
+		"parameters": {
+			"properties": {
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"relative_workspace_path": {
+					"description": "要列出內容的路徑，相對於工作區根目錄。",
+					"type": "string"
+				}
+			},
+			"required": ["relative_workspace_path"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "### 指示：\n這最適合查找精確文字匹配或正則表達式模式。\n當我們知道要在某些目錄/檔案類型中搜尋的確切符號/函式名稱等時，這比語義搜尋更受歡迎。\n\n使用此工具使用 `ripgrep` 引擎對文字檔案運行快速、精確的正則表達式搜尋。\n為避免輸出過多，結果限制為 50 個匹配項。\n使用包含或排除模式按檔案類型或特定路徑過濾搜尋範圍。\n\n- 始終轉義特殊正則表達式字符：( ) [ ] { } + * ? ^ $ | . \\\n- 使用 `\\` 轉義搜尋字串中出現的任何這些字符。\n- 不要執行模糊或語義匹配。\n- 只返回有效的正則表達式模式字串。\n\n### 範例：\n| 字面意思               | 正則表達式模式            |\n|-----------------------|--------------------------|\n| function(             | function\\(              |\n| value[index]          | value\\[index\\]         |\n| file.txt               | file\\.txt                |\n| user|admin            | user\\|admin             |\n| path\\to\\file         | path\\\\to\\\\file        |\n| hello world           | hello world              |\n| foo\\(bar\\)          | foo\\\\(bar\\\\)         |",
+		"name": "grep_search",
+		"parameters": {
+			"properties": {
+				"case_sensitive": {
+					"description": "搜尋是否應區分大小寫",
+					"type": "boolean"
+				},
+				"exclude_pattern": {
+					"description": "要排除的檔案的 Glob 模式",
+					"type": "string"
+				},
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"include_pattern": {
+					"description": "要包含的檔案的 Glob 模式（例如 '*.ts' 用於 TypeScript 檔案）",
+					"type": "string"
+				},
+				"query": {
+					"description": "要搜尋的正則表達式模式",
+					"type": "string"
+				}
+			},
+			"required": ["query"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "使用此工具建議對現有檔案的編輯或建立新檔案。\n\n這將由一個不太智能的模型讀取，該模型將快速應用編輯。你應該明確編輯是什麼，同時也要最小化你寫的未更改程式碼。\n編寫編輯時，你應該按順序指定每個編輯，使用特殊註釋 `// ... existing code ...` 來表示編輯行之間的未更改程式碼。\n\n例如：\n\n```\n// ... existing code ...\nFIRST_EDIT\n// ... existing code ...\nSECOND_EDIT\n// ... existing code ...\nTHIRD_EDIT\n// ... existing code ...\n```\n\n你仍然應該偏向於重複原始檔案中盡可能少的行來傳達更改。\n但是，每個編輯都應該包含你正在編輯的程式碼周圍足夠的未更改行上下文來解決歧義。\n不要省略現有程式碼（或註釋）的跨度而不使用 `// ... existing code ...` 註釋來表示其缺失。如果你省略現有程式碼註釋，模型可能會無意中刪除這些行。\n確保編輯應該是什麼以及應該在哪裡應用是清楚的。\n要建立新檔案，只需在 `code_edit` 欄位中指定檔案的內容。\n\n你應該在其他參數之前指定以下參數：[target_file]\n\n始終在單個 edit_file 中對檔案進行所有編輯，而不是對同一檔案進行多個 edit_file 調用。應用模型可以一次處理許多不同的編輯。編輯多個檔案時，始終進行並行 edit_file 調用。",
+		"name": "edit_file",
+		"parameters": {
+			"properties": {
+				"code_edit": {
+					"description": "僅指定你希望編輯的精確程式碼行。**絕不指定或寫出未更改的程式碼**。相反，使用你正在編輯的語言的註釋來表示所有未更改的程式碼 - 例如：`// ... existing code ...`",
+					"type": "string"
+				},
+				"instructions": {
+					"description": "描述你將為草圖編輯做什麼的單句指示。這用於協助不太智能的模型應用編輯。請使用第一人稱描述你將要做什麼。不要重複你之前在正常訊息中說過的話。並使用它來消除編輯中的不確定性。",
+					"type": "string"
+				},
+				"target_file": {
+					"description": "要修改的目標檔案。始終將目標檔案指定為第一個參數。你可以使用工作區中的相對路徑或絕對路徑。如果提供絕對路徑，將按原樣保留。",
+					"type": "string"
+				}
+			},
+			"required": ["target_file", "instructions", "code_edit"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "使用此工具建議對現有檔案的搜尋和替換操作。\n\n該工具將在指定檔案中將 old_string 的一個出現替換為 new_string。\n\n使用此工具的關鍵要求：\n\n1. 唯一性：old_string 必須唯一標識你想要更改的特定實例。這意味著：\n   - 在更改點之前包含至少 3-5 行上下文\n   - 在更改點之後包含至少 3-5 行上下文\n   - 包含所有空白、縮排和周圍程式碼，完全按照它們在檔案中出現的方式\n\n2. 單一實例：此工具一次只能更改一個實例。如果你需要更改多個實例：\n   - 為每個實例分別調用此工具\n   - 每次調用必須使用廣泛的上下文唯一標識其特定實例\n\n3. 驗證：在使用此工具之前：\n   - 如果存在多個實例，收集足夠的上下文來唯一標識每一個\n   - 為每個實例計劃單獨的工具調用\n",
+		"name": "search_replace",
+		"parameters": {
+			"properties": {
+				"file_path": {
+					"description": "你想要搜尋和替換的檔案路徑。你可以使用工作區中的相對路徑或絕對路徑。如果提供絕對路徑，將按原樣保留。",
+					"type": "string"
+				},
+				"new_string": {
+					"description": "用於替換 old_string 的編輯文字（必須與 old_string 不同）",
+					"type": "string"
+				},
+				"old_string": {
+					"description": "要替換的文字（必須在檔案中是唯一的，並且必須完全匹配檔案內容，包括所有空白和縮排）",
+					"type": "string"
+				}
+			},
+			"required": ["file_path", "old_string", "new_string"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "基於模糊匹配檔案路徑的快速檔案搜尋。如果你知道檔案路徑的一部分但不知道它的確切位置，請使用此工具。響應將限制為 10 個結果。如果需要進一步過濾結果，請使查詢更具體。",
+		"name": "file_search",
+		"parameters": {
+			"properties": {
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"query": {
+					"description": "要搜尋的模糊檔案名",
+					"type": "string"
+				}
+			},
+			"required": ["query", "explanation"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "刪除指定路徑的檔案。如果出現以下情況，操作將優雅地失敗：\n    - 檔案不存在\n    - 操作因安全原因被拒絕\n    - 檔案無法刪除",
+		"name": "delete_file",
+		"parameters": {
+			"properties": {
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"target_file": {
+					"description": "要刪除的檔案路徑，相對於工作區根目錄。",
+					"type": "string"
+				}
+			},
+			"required": ["target_file"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "調用更智能的模型將最後一次編輯應用到指定檔案。\n僅在 edit_file 工具調用結果之後立即使用此工具，且僅當差異不是你期望的時候，表明應用更改的模型不夠智能，無法遵循你的指示。",
+		"name": "reapply",
+		"parameters": {
+			"properties": {
+				"target_file": {
+					"description": "要重新應用最後一次編輯的檔案的相對路徑。你可以使用工作區中的相對路徑或絕對路徑。如果提供絕對路徑，將按原樣保留。",
+					"type": "string"
+				}
+			},
+			"required": ["target_file"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "搜尋網絡以獲取任何主題的實時資訊。當你需要可能在你的訓練資料中不可用的最新資訊，或當你需要驗證當前事實時，請使用此工具。搜尋結果將包括來自網頁的相關片段和 URL。這對於當前事件、技術更新或任何需要最新資訊的主題的問題特別有用。",
+		"name": "web_search",
+		"parameters": {
+			"properties": {
+				"explanation": {
+					"description": "一句話解釋為什麼使用此工具，以及它如何有助於實現目標。",
+					"type": "string"
+				},
+				"search_term": {
+					"description": "要在網絡上查找的搜尋詞。要獲得更好的結果，請具體並包含相關關鍵詞。對於技術查詢，如果相關，請包含版本號或日期。",
+					"type": "string"
+				}
+			},
+			"required": ["search_term"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "建立將在聊天 UI 中渲染的 Mermaid 圖表。通過 `content` 提供原始 Mermaid DSL 字串。\n使用 <br/> 進行換行，始終將圖表文字/標籤包裝在雙引號中，不要使用自定義顏色，不要使用 :::，不要使用測試版功能。\n圖表將被預渲染以驗證語法 - 如果有任何 Mermaid 語法錯誤，它們將在響應中返回，以便你可以修復它們。",
+		"name": "create_diagram",
+		"parameters": {
+			"properties": {
+				"content": {
+					"description": "原始 Mermaid 圖表定義（例如，'graph TD; A-->B;'）。",
+					"type": "string"
+				}
+			},
+			"required": ["content"],
+			"type": "object"
+		}
+	},
+	{
+		"description": "使用此工具編輯 jupyter notebook 儲存格。僅使用此工具編輯筆記本。\n\n此工具支援編輯現有儲存格和建立新儲存格：\n\t- 如果你需要編輯現有儲存格，將 'is_new_cell' 設置為 false 並提供 'old_string' 和 'new_string'。\n\t\t-- 該工具將在指定儲存格中將 'old_string' 的一個出現替換為 'new_string'。\n\t- 如果你需要建立新儲存格，將 'is_new_cell' 設置為 true 並提供 'new_string'（並保持 'old_string' 為空）。\n\t- 正確設置 'is_new_cell' 標誌至關重要！\n\t- 此工具不支援儲存格刪除，但你可以通過將空字串作為 'new_string' 傳遞來刪除儲存格的內容。\n\n其他要求：\n\t- 儲存格索引從 0 開始。\n\t- 'old_string' 和 'new_string' 應該是有效的儲存格內容，即不包含筆記本檔案在底層使用的任何 JSON 語法。\n\t- old_string 必須唯一標識你想要更改的特定實例。這意味著：\n\t\t-- 在更改點之前包含至少 3-5 行上下文\n\t\t-- 在更改點之後包含至少 3-5 行上下文\n\t- 此工具一次只能更改一個實例。如果你需要更改多個實例：\n\t\t-- 為每個實例分別調用此工具\n\t\t-- 每次調用必須使用廣泛的上下文唯一標識其特定實例\n\t- 此工具可能將 markdown 儲存格保存為「raw」儲存格。不要嘗試更改它，這沒問題。我們需要它來正確顯示差異。\n\t- 如果你需要建立新筆記本，只需將 'is_new_cell' 設置為 true 並將 cell_idx 設置為 0。\n\t- 始終按以下順序生成參數：target_notebook, cell_idx, is_new_cell, cell_language, old_string, new_string。\n\t- 偏好編輯現有儲存格而不是建立新儲存格！\n",
+		"name": "edit_notebook",
+		"parameters": {
+			"properties": {
+				"cell_idx": {
+					"description": "要編輯的儲存格索引（從 0 開始）",
+					"type": "number"
+				},
+				"cell_language": {
+					"description": "要編輯的儲存格語言。應該嚴格是以下之一：'python'、'markdown'、'javascript'、'typescript'、'r'、'sql'、'shell'、'raw' 或 'other'。",
+					"type": "string"
+				},
+				"is_new_cell": {
+					"description": "如果為 true，將在指定儲存格索引處建立新儲存格。如果為 false，將編輯指定儲存格索引處的儲存格。",
+					"type": "boolean"
+				},
+				"new_string": {
+					"description": "用於替換 old_string 的編輯文字或新儲存格的內容。",
+					"type": "string"
+				},
+				"old_string": {
+					"description": "要替換的文字（必須在儲存格中是唯一的，並且必須完全匹配儲存格內容，包括所有空白和縮排）。",
+					"type": "string"
+				},
+				"target_notebook": {
+					"description": "你想要編輯的筆記本檔案路徑。你可以使用工作區中的相對路徑或絕對路徑。如果提供絕對路徑，將按原樣保留。",
+					"type": "string"
+				}
+			},
+			"required": ["target_notebook", "cell_idx", "is_new_cell", "cell_language", "old_string", "new_string"],
+			"type": "object"
+		}
+	}
+]
